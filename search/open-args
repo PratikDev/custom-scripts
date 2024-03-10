@@ -1,0 +1,12 @@
+# Declare the associative array
+declare -A urls=(
+  ["whatsapp"]="https://web.whatsapp.com"
+  ["fiverr"]="https://www.fiverr.com/inbox"
+  ["gpt"]="https://chat.openai.com/"
+  ["upwork"]="https://www.upwork.com/nx/find-work/best-matches"
+  ["github"]="https://www.github.com"
+  ["gmail"]="https://www.gmail.com"
+)
+
+export urls
+

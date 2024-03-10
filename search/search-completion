@@ -1,0 +1,22 @@
+#!/bin/bash
+
+function _search_completion() {
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="--yt --gg --open"
+
+    if [[ ${cur} == -* ]] ; then
+        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+        return 0
+    elif [[ ${prev} == "--open" ]] ; then
+        source $HOME/Desktop/custom-scripts/search/open-args
+        properties=$(echo "${!urls[@]}" | tr ' ' '\n' | sort | tr '\n' ' ')
+
+        COMPREPLY=( $(compgen -W "$properties" -- ${cur}) )
+        return 0
+    fi
+}
+
+complete -F _search_completion search

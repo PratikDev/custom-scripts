@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# Function to open the search URL in the default browser
+open_browser() {
+  URL="$1"
+  xdg-open "$URL" > /dev/null 2>&1
+}
+
+# Parse command line arguments
+flag=""
+query=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --yt)
+      flag="--yt"
+      shift
+      ;;
+    --gg)
+      flag="--gg"
+      shift
+      ;;
+    --open)
+      flag="--open"
+      shift
+      ;;
+    *)
+      query="$1"
+      shift
+      ;;
+  esac
+done
+
+usage_message="Usage: search [--yt|--gg|--open] <search query>"
+
+# Check if flag and query are provided
+if [[ -z "$flag" || -z "$query" ]]; then
+  echo "Missing flag or search query"
+  echo "$usage_message"
+  exit 1
+fi
+
+# Check if flag --open (for direct url search in google)
+if [[ "$flag" == "--open" ]]; then
+  source $HOME/Desktop/custom-scripts/search/open-args
+
+  # Check if the url exists in the array
+  if [[ -z "${urls[$query]}" ]]; then
+    echo "Invalid query: $query"
+    echo "Valid queries: ${!urls[@]}"
+    echo "$usage_message"
+    exit 1
+  fi
+
+  # Open the url in the default browser
+  open_browser "${urls[$query]}"
+
+  exit 0
+fi
+
+# Set the search URL based on the flag
+if [[ "$flag" == "--yt" ]]; then
+  SEARCH_URL="https://www.youtube.com/results?search_query="
+elif [[ "$flag" == "--gg" ]]; then
+  SEARCH_URL="https://www.google.com/search?q="
+else
+  echo "Invalid flag: $flag"
+  echo "$usage_message"
+  exit 1
+fi
+
+# Combine the search URL and the search query
+SEARCH_QUERY=$(echo "$query" | sed -e 's/ /+/g')
+URL="${SEARCH_URL}${SEARCH_QUERY}"
+
+# Open the URL in the default browser
+open_browser "$URL"
